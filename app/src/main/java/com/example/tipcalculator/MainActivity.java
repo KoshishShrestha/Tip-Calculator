@@ -3,9 +3,9 @@ package com.example.tipcalculator;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -15,95 +15,74 @@ import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private EditText ConvertValue;
+    private RadioGroup radioGroup;
+    private Switch switch1;
+    private Button Calculate;
+    private TextView Amount;
+    private double conversionRate;
+    public MainActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ConvertValue = findViewById(R.id.ConversionNumber);
+        radioGroup = findViewById(R.id.radioGroup);
+        switch1 = findViewById(R.id.switch1);
+        Calculate = findViewById(R.id.Calcluatebutton);
+        Amount = findViewById(R.id.Result);
 
-        // Find the "Calculate" button in the layout and set a listener to it
-        Button BtnCal = findViewById(R.id.calculate_button);
-        BtnCal.setOnClickListener(v -> {
-            tipCalculate();
-        });
-    }
+        Calculate.setOnClickListener(new View.OnClickListener() {
 
-    // This method calculates the tip and updates with the result
-    private void tipCalculate() {
-        RadioGroup tipOption = findViewById(R.id.tip_options);
-        TextView tipResult = findViewById(R.id.tip_result);
-        EditText costAmount = findViewById(R.id.cost_of_service);
-        Switch roundUp = findViewById(R.id.round_up_switch);
-        boolean RoundUp = roundUp.isChecked();
-        double result = 0;
-        try {
-            //Get the cost amount from input and parse it into Double
-            Double amount = Double.parseDouble(costAmount.getText().toString());
+            @Override
 
-            // Get the selected radio button ID
-            int selectedOption = tipOption.getCheckedRadioButtonId();
+            public void onClick(View view) {
+                try {
+                    String value = ConvertValue.getText().toString();
+                    int value1 = Integer.parseInt(value);
+                    int radioId = radioGroup.getCheckedRadioButtonId(); // get the id of the selected radio button/
 
-            // Calculate as per selected option and round up Tip
-            if (RoundUp) {
 
-                if (selectedOption == R.id.option_twenty_percent) {
+                    //use switch case
+                    switch(radioId)
+                    {
+                        case (R.id.ML):
+                            if(switch1.isChecked())
+                            {
+                                conversionRate = 29.573;
 
-                    // Calculate the result and round it up
-                    result = Math.ceil(amount * 0.20);
+                            }
+                            else
+                            {
+                                conversionRate = 0.033814;
 
-                    // Update the text with the result
-                    tipResult.setText("Tip Amount: " + String.valueOf(result));
+                            }
+                            break;
+                        case( R.id.G):
 
-                } else if (selectedOption == R.id.option_eighteen_percent) {
-                    result = Math.ceil(amount * 0.18);
-                    tipResult.setText("Tip Amount: " + String.valueOf(result));
+                            if(switch1.isChecked())
+                            {
+                                conversionRate = 240;
 
-                } else if (selectedOption == R.id.option_fifteen_percent) {
-                    result = Math.ceil(amount * 0.15);
-                    tipResult.setText("Tip Amount: " + String.valueOf(result));
+                            }
+
+                            else
+                            {
+                                conversionRate = 0.008;
+
+                            }
+                            break;
+                    }
+                    double result = value1* conversionRate;
+                    Amount.setText(String.valueOf(result));
+
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, "Please enter a valid number.", Toast.LENGTH_SHORT).show();
                 }
+
             }
-            else{
-                // Calculate the result based on selected option, round it up is off
-                DecimalFormat f = new DecimalFormat("#.###");
-
-            if (selectedOption == R.id.option_twenty_percent) {
-
-                // Calculate the result
-                result = amount * 0.20;
-
-                // Format the result based on the Decimal Format
-                String formattedResult = f.format(result);
-                double finalResult = Double.parseDouble((formattedResult));
-
-                // Update the text with the result
-                tipResult.setText("Tip Amount: " + String.valueOf(finalResult));
-
-            } else if (selectedOption == R.id.option_eighteen_percent) {
-                result = amount * 0.18;
-                String formattedResult = f.format(result);
-                double finalResult = Double.parseDouble((formattedResult));
-
-                // Update the text with the result
-                tipResult.setText("Tip Amount: " + String.valueOf(finalResult));
-
-            } else if (selectedOption == R.id.option_fifteen_percent) {
-
-                // Calculate the result
-                result = amount * 0.15;
-
-                // Format the result based on the Decimal Format
-                String formattedResult = f.format(result);
-                double finalResult = Double.parseDouble((formattedResult));
-
-                // Update the text with the result
-                tipResult.setText("Tip Amount: " + String.valueOf(finalResult));
-            }
-        }
-    }
-        catch (NumberFormatException e) {
-            // Show a toast message if the user did not enter a valid cost
-            Toast toast = Toast.makeText(this, "Please enter the correct amount", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        });
     }
 }
